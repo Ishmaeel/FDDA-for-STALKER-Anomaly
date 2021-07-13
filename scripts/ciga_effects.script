@@ -4,7 +4,7 @@ Author: Feel_Fried
 --]]
 local smoke = false
 local ltx = ini_file("items\\items\\anims_cigga_smoke.ltx")
-local i = 0.3
+local i = 0
 local function create_smoke()
 	if not smoke then
 		smoke = particles_object("industrial_particles\\weapon_smoke")
@@ -18,13 +18,13 @@ local function move_smoke()
 		local pos = device().cam_pos
 		local dir = device().cam_dir
 		i = i + 0.03
-		pos.y = pos.y - 0.1
+		pos.y = pos.y
 		pos.x = pos.x + i*dir.x
 		pos.z = pos.z + i*dir.z
 		smoke:move_to(pos, dir)
 		return false
 	else
-		i = 0.3
+		i = 0
 		pos = nil
 		dir = nil
 		return true

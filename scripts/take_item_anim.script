@@ -2,9 +2,20 @@
 item pickup animation script
 Author: Feel_Fried
 --]]
-local skin_anim, harv_usage_snd,enable_take
+local skin_anim, enable_animations, harv_usage_snd,enable_take
 local bool_to_number={ [true]=1, [false]=0 }
 local ltx = ini_file("items\\items\\anims_loot_list.ltx")
+local take_item_flag = false
+
+local movement_keys = {
+    [key_bindings.kUSE] = true,
+    [key_bindings.kFWD] = true,
+    [key_bindings.kBACK] = true,
+    [key_bindings.kL_STRAFE] = true,
+    [key_bindings.kR_STRAFE] = true,
+    [key_bindings.kACCEL] = true,
+    [7] = true -- kSPRINT_TOGGLE
+}
 
 function on_game_start()
 	RegisterScriptCallback("actor_on_first_update",actor_on_first_update)
@@ -13,6 +24,7 @@ end
 
 function actor_on_first_update()
 	RegisterScriptCallback("actor_on_item_take",actor_on_item_take)
+	RegisterScriptCallback("on_key_press", on_key_press)
 	loadsettings()
 end
 
@@ -28,18 +40,40 @@ function loadsettings()
 	end
 end
 
+function on_key_press(key)
+    local bind = dik_to_bind(key)
+
+    if bind == key_bindings.kUSE then
+        local weapon = db.actor:active_item()
+        local weapon_state = (weapon and weapon.get_state and weapon:get_state()) or 0
+        if weapon_state == 0 then
+            take_item_flag = true
+        end
+    end
+
+    if not movement_keys[bind] then
+        take_item_flag = false
+    end
+end
+
 function actor_on_item_take(item)
-	local itemv = item:position()
-	local actorv = db.actor:position()
-	local dist = actorv:distance_to(itemv)
 	--item pickup animation
-	local checkrun = level.actor_moving_state()
-	local check = bool_to_number[not enhanced_animations.used_item] + bool_to_number[not anim_used] + bool_to_number[not enhanced_animations.fake_monster] + bool_to_number[enable_animations] + ((string.sub(item:section(),1,4) == 'anim') and 0 or 1) + ((checkrun >= 2000) and 0 or 1)
-	if ( dist > default_dist ) and (check == 6) and enable_take then
+	local check = bool_to_number[not enhanced_animations.used_item]
+	+ bool_to_number[not anim_used] 
+	+ bool_to_number[not enhanced_animations.fake_monster] 
+	+ bool_to_number[enable_animations] 
+	+ bool_to_number[string.sub(item:section(), 1, 4) ~= 'anim']
+	+ bool_to_number[take_item_flag]
+	+ bool_to_number[enable_take]
+
+	take_item_flag = false
+
+	if check == 7 then
 		game.play_hud_motion(db.actor:active_slot()==0 and 2 or 1, "item_ea_take_hud", "anm_ea_take", true, 1.4)
 		anim_used = true
 		CreateTimeEvent("anim_delay", "anim_delay", 0.5, anim_delay)
 	end
+
 	--mutant loot bag animation
 	if enhanced_animations.fake_monster then
 		fov_anim_manager.change_fov(0.45)

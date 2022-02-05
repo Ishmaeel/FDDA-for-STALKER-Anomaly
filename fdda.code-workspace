@@ -22,7 +22,7 @@
 		"runOnSave.commands": [
 			{
 				"match": "take_item_anim",
-				"command": "xcopy ${workspaceFolder}\\scripts\\take_item_anim.script C:\\Games\\MO2-Anomaly\\mods\\FDDA_Item_Take_Fix\\gamedata /DICEY",
+				"command": "xcopy ${workspaceFolder}\\scripts\\take_item_anim.script C:\\Games\\MO2-Anomaly\\mods\\FDDA_Item_Take_Fix\\gamedata\\scripts\\ /Y",
 				"runIn": "backend",
 				"finishStatusMessage": "take_item_anim.script copied."
 			}

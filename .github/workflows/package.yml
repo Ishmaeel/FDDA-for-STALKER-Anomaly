@@ -31,7 +31,10 @@ jobs:
         run: echo "::set-output name=today::$(date +'%Y.%m.%d')"
 
       - name: Zip folder
-        run: zip -r FDDA_Item_Take_Fix.$RELEASE_NAME.zip scripts/take_item_anim.script
+        run: |
+          mkdir -p gamedata/scripts
+          cp scripts/take_item_anim.script gamedata/scripts
+          zip -r FDDA_Item_Take_Fix.$RELEASE_NAME.zip gamedata
         env: 
           RELEASE_NAME: ${{steps.date.outputs.today}}
       
